@@ -137,7 +137,7 @@ export const paymentMethods: PaymentMethod[] = [
     fees: {
       DK: {
         understory: { percentage: 1.4, fixedFee: 2 },
-        stripe: null,
+        stripe: { percentage: 1.5, fixedFee: 2.80 },
       },
     },
     footnote: {
