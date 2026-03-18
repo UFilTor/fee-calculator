@@ -1,0 +1,31 @@
+import type { Country } from "../../types";
+
+interface Props {
+  value: number;
+  onChange: (value: number) => void;
+  country: Country;
+}
+
+export default function BookingAmountInput({ value, onChange, country }: Props) {
+  return (
+    <div className="flex items-center gap-3">
+      <label htmlFor="booking-amount" className="text-sm font-medium text-gray-600 whitespace-nowrap">
+        Booking amount
+      </label>
+      <div className="flex items-center">
+        <input
+          id="booking-amount"
+          type="number"
+          min={1}
+          value={value}
+          onChange={(e) => {
+            const v = parseInt(e.target.value, 10);
+            if (!isNaN(v) && v > 0) onChange(v);
+          }}
+          className="w-24 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-900 focus:border-understory focus:outline-none focus:ring-1 focus:ring-understory"
+        />
+        <span className="ml-2 text-sm text-gray-500">{country.currency}</span>
+      </div>
+    </div>
+  );
+}

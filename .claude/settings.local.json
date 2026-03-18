@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(source ~/.zshrc)",
+      "Bash(source ~/.nvm/nvm.sh)",
+      "Read(//opt/homebrew/bin/**)",
+      "Read(//usr/local/**)",
+      "Read(//Users/filip/**)",
+      "Bash(brew install:*)",
+      "Bash(npx create-vite@latest . --template react-ts)",
+      "Bash(npx --yes create-vite@latest . --template react-ts -- --force)",
+      "Bash(npx --yes create-vite@latest . --template react-ts --overwrite)",
+      "Bash(npx --yes create-vite@latest . --template react-ts)",
+      "Bash(cp -r tmp-vite/fee-calc/* tmp-vite/fee-calc/.* .)",
+      "Bash(rm -rf tmp-vite)",
+      "Bash(npm install:*)",
+      "Bash(rm -f src/App.css)",
+      "Bash(rm -rf src/assets)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(rm:*)",
+      "WebFetch(domain:simpleicons.org)",
+      "WebFetch(domain:www.vectorlogo.zone)"
+    ]
+  }
+}
