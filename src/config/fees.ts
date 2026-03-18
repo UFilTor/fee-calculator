@@ -59,7 +59,7 @@ export const paymentMethods: PaymentMethod[] = [
       },
       IT: {
         understory: { percentage: 1.4, fixedFee: 0 },
-        stripe: { percentage: 1.4, fixedFee: 0.25 },
+        stripe: { percentage: 1.5, fixedFee: 0.25 },
       },
     },
   },
