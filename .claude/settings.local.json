@@ -21,7 +21,9 @@
       "Bash(npm run:*)",
       "Bash(rm:*)",
       "WebFetch(domain:simpleicons.org)",
-      "WebFetch(domain:www.vectorlogo.zone)"
+      "WebFetch(domain:www.vectorlogo.zone)",
+      "Bash(npx vercel:*)",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

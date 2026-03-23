@@ -32,7 +32,13 @@ export default function SavingsSummary({
 }: Props) {
   const [showCosts, setShowCosts] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [txnInputValue, setTxnInputValue] = useState(String(monthlyTransactions));
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Keep local input in sync when parent value changes externally
+  useEffect(() => {
+    setTxnInputValue(String(monthlyTransactions));
+  }, [monthlyTransactions]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -76,10 +82,17 @@ export default function SavingsSummary({
               <input
                 type="number"
                 min={1}
-                value={monthlyTransactions}
+                value={txnInputValue}
                 onChange={(e) => {
+                  setTxnInputValue(e.target.value);
                   const v = parseInt(e.target.value, 10);
                   if (!isNaN(v) && v > 0) onMonthlyTransactionsChange(v);
+                }}
+                onBlur={() => {
+                  const v = parseInt(txnInputValue, 10);
+                  if (isNaN(v) || v < 1) {
+                    setTxnInputValue(String(monthlyTransactions));
+                  }
                 }}
                 className="w-16 rounded bg-white/10 px-1.5 py-0.5 text-xs font-semibold text-white text-center focus:outline-none focus:ring-1 focus:ring-green-300"
               />
@@ -159,6 +172,7 @@ export default function SavingsSummary({
       {/* Monthly cost toggle */}
       <button
         onClick={() => setShowCosts(!showCosts)}
+        data-export-hide={showCosts ? undefined : ""}
         className="text-xs text-gray-500 hover:text-gray-700 transition-colors cursor-pointer flex items-center gap-1"
       >
         <svg
