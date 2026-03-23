@@ -64,6 +64,42 @@ export const paymentMethods: PaymentMethod[] = [
     },
   },
   {
+    id: "swish",
+    label: "Swish",
+    icon: "swish",
+    fees: {
+      SE: {
+        understory: { percentage: 1.0, fixedFee: 3.50 },
+        stripe: null,
+      },
+    },
+  },
+  {
+    id: "vipps",
+    label: "Vipps",
+    icon: "vipps",
+    fees: {
+      NO: {
+        understory: { percentage: 1.4, fixedFee: 2 },
+        stripe: null,
+      },
+    },
+  },
+  {
+    id: "mobilepay",
+    label: "MobilePay",
+    icon: "mobilepay",
+    fees: {
+      DK: {
+        understory: { percentage: 1.4, fixedFee: 2 },
+        stripe: { percentage: 1.5, fixedFee: 2.80 },
+      },
+    },
+    footnote: {
+      DK: "Stripe Dit MobilePay also has a 35 DKK/month membership fee (not included above).",
+    },
+  },
+  {
     id: "klarna-pay-now",
     label: "Klarna Pay Now",
     icon: "klarna",
@@ -106,42 +142,6 @@ export const paymentMethods: PaymentMethod[] = [
         understory: { percentage: 2.5, fixedFee: 5 },
         stripe: { percentage: 2.99, fixedFee: 3.50 },
       },
-    },
-  },
-  {
-    id: "swish",
-    label: "Swish",
-    icon: "swish",
-    fees: {
-      SE: {
-        understory: { percentage: 1.0, fixedFee: 3.50 },
-        stripe: null,
-      },
-    },
-  },
-  {
-    id: "vipps",
-    label: "Vipps",
-    icon: "vipps",
-    fees: {
-      NO: {
-        understory: { percentage: 1.4, fixedFee: 2 },
-        stripe: null,
-      },
-    },
-  },
-  {
-    id: "mobilepay",
-    label: "MobilePay",
-    icon: "mobilepay",
-    fees: {
-      DK: {
-        understory: { percentage: 1.4, fixedFee: 2 },
-        stripe: { percentage: 1.5, fixedFee: 2.80 },
-      },
-    },
-    footnote: {
-      DK: "Stripe Dit MobilePay also has a 35 DKK/month membership fee (not included above).",
     },
   },
 ];
