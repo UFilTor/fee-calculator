@@ -47,10 +47,6 @@ export default function App() {
     }
   }, [availableMethods, selectedMethodIds.length]);
 
-  // Dynamic page title
-  useEffect(() => {
-    document.title = `Fee Calculator — ${country.label} / ${bookingAmount} ${country.currency}`;
-  }, [country, bookingAmount]);
 
   return (
     <Layout>
