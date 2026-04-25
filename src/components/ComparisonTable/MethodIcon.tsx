@@ -5,50 +5,76 @@ import mobilepayLogo from "../../assets/MobilePay.png";
 
 interface Props {
   icon: string;
+  size?: number;
 }
 
-const SIZE = "flex h-8 w-12 items-center justify-center rounded overflow-hidden";
+export default function MethodIcon({ icon, size = 42 }: Props) {
+  const w = Math.round(size * 1.7);
+  const tile: React.CSSProperties = {
+    width: w,
+    height: size,
+    borderRadius: 8,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+    overflow: "hidden",
+    background: "#fff",
+    border: "0.5px solid rgba(2,44,18,0.10)",
+    padding: "6px 8px",
+  };
 
-export default function MethodIcon({ icon }: Props) {
-  switch (icon) {
-    case "card":
-      return (
-        <div className={`${SIZE} bg-gray-100 text-gray-500`}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
-            <line x1="1" y1="10" x2="23" y2="10" />
-          </svg>
-        </div>
-      );
-    case "klarna":
-      return (
-        <div className={`${SIZE} bg-white`}>
-          <img src={klarnaLogo} alt="Klarna" className="h-6 w-auto object-contain" />
-        </div>
-      );
-    case "swish":
-      return (
-        <div className={`${SIZE} bg-white`}>
-          <img src={swishLogo} alt="Swish" className="h-6 w-auto object-contain" />
-        </div>
-      );
-    case "vipps":
-      return (
-        <div className={`${SIZE} bg-white`}>
-          <img src={vippsLogo} alt="Vipps" className="h-6 w-auto object-contain" />
-        </div>
-      );
-    case "mobilepay":
-      return (
-        <div className={`${SIZE} bg-white`}>
-          <img src={mobilepayLogo} alt="MobilePay" className="h-6 w-auto object-contain" />
-        </div>
-      );
-    default:
-      return (
-        <div className={`${SIZE} bg-gray-100 text-gray-400`}>
-          ?
-        </div>
-      );
+  if (icon === "card") {
+    return (
+      <div
+        style={{
+          ...tile,
+          background: "var(--color-lichen)",
+          color: "var(--color-moss)",
+        }}
+      >
+        <svg
+          width={size * 0.55}
+          height={size * 0.55}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
+        </svg>
+      </div>
+    );
   }
+
+  const map: Record<string, string> = {
+    klarna: klarnaLogo,
+    swish: swishLogo,
+    vipps: vippsLogo,
+    mobilepay: mobilepayLogo,
+  };
+  const src = map[icon];
+
+  if (src) {
+    return (
+      <div style={tile}>
+        <img
+          src={src}
+          alt=""
+          style={{
+            maxWidth: "100%",
+            maxHeight: "100%",
+            width: "auto",
+            height: "auto",
+            objectFit: "contain",
+          }}
+        />
+      </div>
+    );
+  }
+
+  return <div style={tile}>?</div>;
 }

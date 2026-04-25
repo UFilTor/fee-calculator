@@ -9,14 +9,21 @@ export default function SavingsBadge({ percent }: Props) {
 
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
-        isPositive
-          ? "bg-savings-bg text-savings"
-          : "bg-red-50 text-red-600"
-      }`}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 4,
+        padding: "4px 10px",
+        borderRadius: 999,
+        fontSize: 12,
+        fontWeight: 600,
+        letterSpacing: "0.02em",
+        background: isPositive ? "var(--color-citrus)" : "rgba(126,12,4,0.08)",
+        color: isPositive ? "var(--color-moss)" : "var(--color-red)",
+        whiteSpace: "nowrap",
+      }}
     >
-      {isPositive ? "+" : ""}
-      {percent.toFixed(0)}%
+      {isPositive ? "↓" : "↑"} {Math.abs(percent).toFixed(0)}%
     </span>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Retune } from "retune";
 import type { CountryCode } from "./types";
 import { countries } from "./config/fees";
 import { useCalculator } from "./hooks/useCalculator";
@@ -9,8 +10,6 @@ import BookingAmountInput from "./components/TopControls/BookingAmountInput";
 import ComparisonTable from "./components/ComparisonTable/ComparisonTable";
 import SavingsSummary from "./components/SavingsSummary";
 import ExportButton from "./components/ExportButton";
-import Footer from "./components/Footer";
-import understoryLogo from "./assets/understory-logo.png";
 
 const initialState = getInitialStateFromUrl();
 
@@ -26,35 +25,101 @@ export default function App() {
     rows,
     savingsBreakdown,
     totalAnnualSavings,
-    totalMonthlyUnderstory,
-    totalMonthlyStripe,
     availableMethods,
   } = useCalculator(countryCode, bookingAmount, monthlyTransactions, selectedMethodIds);
 
-  // Sync state to URL
   useSyncUrlState(countryCode, bookingAmount, monthlyTransactions);
 
-  // Reset booking amount and selected methods when country changes
   useEffect(() => {
     setBookingAmount(countries[countryCode].defaultAmount);
     setSelectedMethodIds([]);
   }, [countryCode]);
 
-  // Auto-select all available methods when they change and nothing is selected
   useEffect(() => {
     if (selectedMethodIds.length === 0 && availableMethods.length > 0) {
       setSelectedMethodIds(availableMethods.map((m) => m.id));
     }
   }, [availableMethods, selectedMethodIds.length]);
 
-
   return (
     <Layout>
-      <div ref={exportRef} className="space-y-6">
-        {/* Logo */}
-        <img src={understoryLogo} alt="Understory" className="h-14 w-14 sm:h-20 sm:w-20 rounded-lg mx-auto" />
-        {/* Top Controls */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+      <div
+        ref={exportRef}
+        style={{ display: "flex", flexDirection: "column", gap: 16 }}
+      >
+        {/* Logo + eyebrow */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            className="text-left"
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              background: "var(--color-moss)",
+              color: "var(--color-citrus)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontFamily: "var(--font-display)",
+              fontSize: 26,
+              fontWeight: 700,
+              lineHeight: 1,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            U
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span
+              className="u-label"
+              style={{ color: "var(--color-moss)", fontSize: 11 }}
+            >
+              Understory Pay
+            </span>
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 500,
+                color: "var(--color-muted)",
+              }}
+            >
+              Fee comparison
+            </span>
+          </div>
+        </div>
+
+        {/* Hero headline */}
+        <h1
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: "clamp(34px, 4.6vw, 52px)",
+            lineHeight: 0.95,
+            letterSpacing: "-0.02em",
+            textTransform: "uppercase",
+            margin: 0,
+            color: "var(--color-moss)",
+            maxWidth: 720,
+          }}
+        >
+          See what you'd save with{" "}
+          <span style={{ color: "var(--color-rust)" }}>Understory Pay</span>
+        </h1>
+
+        {/* Top controls surface */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24,
+            padding: "14px 20px",
+            background: "var(--color-off-white)",
+            border: "1px solid var(--border)",
+            borderRadius: 16,
+          }}
+        >
           <BookingAmountInput
             value={bookingAmount}
             onChange={setBookingAmount}
@@ -63,15 +128,13 @@ export default function App() {
           <CountrySelector selected={countryCode} onChange={setCountryCode} />
         </div>
 
-        {/* Comparison Table */}
-        <ComparisonTable rows={rows} country={country} bookingAmount={bookingAmount} />
+        {/* Comparison surface */}
+        <ComparisonTable rows={rows} country={country} />
 
-        {/* Savings Summary */}
+        {/* Savings hero card */}
         <SavingsSummary
           savingsBreakdown={savingsBreakdown}
           totalAnnualSavings={totalAnnualSavings}
-          totalMonthlyUnderstory={totalMonthlyUnderstory}
-          totalMonthlyStripe={totalMonthlyStripe}
           monthlyTransactions={monthlyTransactions}
           onMonthlyTransactionsChange={setMonthlyTransactions}
           bookingAmount={bookingAmount}
@@ -83,10 +146,10 @@ export default function App() {
       </div>
 
       {/* Export & Footer (outside export area) */}
-      <div className="mt-6 flex justify-end">
+      <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
         <ExportButton targetRef={exportRef} />
       </div>
-      <Footer />
+      <Retune />
     </Layout>
   );
 }

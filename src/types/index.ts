@@ -8,7 +8,7 @@ export interface FeeStructure {
 export interface PaymentMethod {
   id: string;
   label: string;
-  sublabel?: string;
+  sub?: string;
   icon: "card" | "klarna" | "swish" | "vipps" | "mobilepay";
   fees: Partial<Record<CountryCode, {
     understory: FeeStructure;
