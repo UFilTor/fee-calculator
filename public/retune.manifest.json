@@ -1,0 +1,140 @@
+{
+  "version": 2,
+  "tokens": {
+    "typography": {
+      "font-sans": {
+        "value": "\"Inter\", \"Inter Variable\", \"Helvetica Neue\", Helvetica, Arial, sans-serif",
+        "variable": "--font-sans"
+      },
+      "font-display": {
+        "value": "\"National 2 Condensed\", \"Oswald\", \"Impact\", sans-serif",
+        "variable": "--font-display"
+      }
+    },
+    "colors": {
+      "brand": {
+        "color-moss": {
+          "value": "#022c12",
+          "variable": "--color-moss"
+        },
+        "color-citrus": {
+          "value": "#f0f97e",
+          "variable": "--color-citrus"
+        },
+        "color-lichen": {
+          "value": "#d5dfca",
+          "variable": "--color-lichen"
+        },
+        "color-rust": {
+          "value": "#933f29",
+          "variable": "--color-rust"
+        },
+        "color-red": {
+          "value": "#7e0c04",
+          "variable": "--color-red"
+        },
+        "color-dark-blue": {
+          "value": "#091329",
+          "variable": "--color-dark-blue"
+        }
+      },
+      "neutrals": {
+        "color-light-grey": {
+          "value": "#f8f6ed",
+          "variable": "--color-light-grey"
+        },
+        "color-off-white": {
+          "value": "#fefdfb",
+          "variable": "--color-off-white"
+        },
+        "color-beige": {
+          "value": "#ede8d0",
+          "variable": "--color-beige"
+        },
+        "color-ink": {
+          "value": "#17181a",
+          "variable": "--color-ink"
+        },
+        "color-muted": {
+          "value": "#99968a",
+          "variable": "--color-muted"
+        }
+      },
+      "borders": {
+        "border": {
+          "value": "rgba(2, 44, 18, 0.12)",
+          "variable": "--border"
+        }
+      }
+    },
+    "radii": {
+      "radius-sm": { "value": "6px" },
+      "radius-md": { "value": "8px" },
+      "radius-lg": { "value": "10px" },
+      "radius-xl": { "value": "12px" },
+      "radius-2xl": { "value": "16px" },
+      "radius-3xl": { "value": "20px" },
+      "radius-pill": { "value": "999px" }
+    }
+  },
+  "components": {
+    "MethodIcon": {
+      "props": {
+        "icon": {
+          "type": "enum",
+          "values": ["card", "klarna", "swish", "vipps", "mobilepay"]
+        },
+        "size": { "type": "number" }
+      }
+    },
+    "SavingsBadge": {
+      "props": {
+        "percent": { "type": "number" }
+      }
+    },
+    "FeeCell": {
+      "props": {
+        "variant": {
+          "type": "enum",
+          "values": ["understory", "stripe"]
+        }
+      }
+    },
+    "CountrySelector": {
+      "props": {
+        "selected": {
+          "type": "enum",
+          "values": ["SE", "NO", "DK", "IT"]
+        }
+      }
+    },
+    "BookingAmountInput": {
+      "props": {}
+    },
+    "ComparisonTable": {
+      "props": {}
+    },
+    "TableRow": {
+      "props": {}
+    },
+    "SavingsSummary": {
+      "props": {},
+      "state": {
+        "showCosts": { "type": "boolean" },
+        "dropdownOpen": { "type": "boolean" }
+      }
+    },
+    "ExportButton": {
+      "props": {},
+      "state": {
+        "exporting": { "type": "boolean" }
+      }
+    },
+    "Footer": {
+      "props": {}
+    },
+    "Layout": {
+      "props": {}
+    }
+  }
+}

@@ -4,40 +4,47 @@ import TableRow from "./TableRow";
 interface Props {
   rows: CalculatedRow[];
   country: Country;
-  bookingAmount: number;
 }
 
-export default function ComparisonTable({ rows, country, bookingAmount }: Props) {
+export default function ComparisonTable({ rows, country }: Props) {
   return (
-    <div className="-mx-4 overflow-x-auto sm:mx-0">
-      <table className="w-full min-w-[500px]">
-        <thead>
-          <tr className="border-b border-gray-200">
-            <th className="py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">
-              Payment method
-            </th>
-            <th className="py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-400">
-              Understory Pay
-            </th>
-            <th className="py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-400">
-              Stripe
-            </th>
-            <th className="py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-400">
-              Savings
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.method.id}
-              row={row}
-              country={country}
-              bookingAmount={bookingAmount}
-            />
-          ))}
-        </tbody>
-      </table>
+    <div
+      style={{
+        background: "var(--color-off-white)",
+        border: "1px solid var(--border)",
+        borderRadius: 16,
+        padding: "4px 24px 8px",
+      }}
+    >
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 64px",
+          gap: 18,
+          padding: "10px 4px 6px",
+          alignItems: "center",
+        }}
+      >
+        <div className="u-label" style={{ color: "var(--color-muted)" }}>
+          Payment method
+        </div>
+        <div
+          className="u-label"
+          style={{ color: "var(--color-moss)", textAlign: "right" }}
+        >
+          Understory Pay
+        </div>
+        <div
+          className="u-label"
+          style={{ color: "var(--color-muted)", textAlign: "right" }}
+        >
+          Stripe
+        </div>
+        <div />
+      </div>
+      {rows.map((row) => (
+        <TableRow key={row.method.id} row={row} country={country} />
+      ))}
     </div>
   );
 }

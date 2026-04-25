@@ -10,7 +10,7 @@ interface Props {
 
 export default function CountrySelector({ selected, onChange }: Props) {
   return (
-    <div role="radiogroup" aria-label="Select country" className="flex gap-2 sm:ml-auto shrink-0">
+    <div role="radiogroup" aria-label="Select country" className="flex flex-wrap gap-2">
       {countryOrder.map((code) => {
         const country = countries[code];
         const isSelected = selected === code;
@@ -20,14 +20,27 @@ export default function CountrySelector({ selected, onChange }: Props) {
             role="radio"
             aria-checked={isSelected}
             onClick={() => onChange(code)}
-            title={country.label}
-            className={`inline-flex items-center justify-center rounded-full w-9 h-9 text-lg transition-colors cursor-pointer ${
-              isSelected
-                ? "bg-understory text-white ring-2 ring-understory ring-offset-2"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "8px 14px",
+              borderRadius: 999,
+              border: isSelected
+                ? "1px solid var(--color-moss)"
+                : "1px solid var(--border)",
+              background: isSelected ? "var(--color-moss)" : "var(--color-off-white)",
+              color: isSelected ? "var(--color-light-grey)" : "var(--color-ink)",
+              fontFamily: "inherit",
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: "pointer",
+              transition: "background .12s, color .12s, border-color .12s",
+              whiteSpace: "nowrap",
+            }}
           >
-            <span>{country.flag}</span>
+            <span style={{ fontSize: 15, lineHeight: 1 }}>{country.flag}</span>
+            <span>{country.label}</span>
           </button>
         );
       })}

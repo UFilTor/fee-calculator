@@ -15,11 +15,15 @@ export default function BookingAmountInput({ value, onChange, country }: Props) 
   }, [value]);
 
   return (
-    <div className="flex items-center gap-3">
-      <label htmlFor="booking-amount" className="text-sm font-medium text-gray-600 whitespace-nowrap">
+    <div style={{ display: "flex", alignItems: "baseline", gap: 14, minWidth: 0 }}>
+      <label
+        htmlFor="booking-amount"
+        className="u-label"
+        style={{ color: "var(--color-muted)" }}
+      >
         Booking amount
       </label>
-      <div className="flex items-center">
+      <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
         <input
           id="booking-amount"
           type="number"
@@ -35,9 +39,32 @@ export default function BookingAmountInput({ value, onChange, country }: Props) 
               setDisplay(String(value));
             }
           }}
-          className="w-24 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-900 focus:border-understory focus:outline-none focus:ring-1 focus:ring-understory"
+          style={{
+            width: 110,
+            fontFamily: "var(--font-display)",
+            fontSize: 36,
+            fontWeight: 700,
+            lineHeight: 1,
+            letterSpacing: "-0.01em",
+            color: "var(--color-moss)",
+            border: "none",
+            borderBottom: "2px solid var(--color-moss)",
+            background: "transparent",
+            outline: "none",
+            padding: "2px 0",
+            textAlign: "left",
+            fontVariantNumeric: "tabular-nums",
+          }}
         />
-        <span className="ml-2 text-sm text-gray-500">{country.currency}</span>
+        <span
+          style={{
+            fontSize: 14,
+            color: "var(--color-muted)",
+            fontWeight: 500,
+          }}
+        >
+          {country.currency}
+        </span>
       </div>
     </div>
   );

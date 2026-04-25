@@ -16,12 +16,11 @@ export default function ExportButton({ targetRef }: Props) {
       const el = targetRef.current;
       el.style.padding = "24px";
 
-      // Hide elements marked for export exclusion
       const hidden = el.querySelectorAll<HTMLElement>("[data-export-hide]");
       hidden.forEach((h) => (h.style.display = "none"));
 
       const dataUrl = await toPng(el, {
-        backgroundColor: "#fafafa",
+        backgroundColor: "#f8f6ed",
         pixelRatio: 2,
       });
 
@@ -36,7 +35,9 @@ export default function ExportButton({ targetRef }: Props) {
       document.body.removeChild(link);
     } catch (err) {
       targetRef.current.style.padding = "";
-      targetRef.current.querySelectorAll<HTMLElement>("[data-export-hide]").forEach((h) => (h.style.display = ""));
+      targetRef.current
+        .querySelectorAll<HTMLElement>("[data-export-hide]")
+        .forEach((h) => (h.style.display = ""));
       console.error("Export failed:", err);
       alert("Export failed: " + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -48,9 +49,33 @@ export default function ExportButton({ targetRef }: Props) {
     <button
       onClick={handleExport}
       disabled={exporting}
-      className="inline-flex items-center gap-2 rounded-lg bg-understory px-4 py-2 text-sm font-medium text-white hover:bg-understory-dark transition-colors cursor-pointer print:hidden disabled:opacity-50"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 8,
+        borderRadius: 8,
+        background: "var(--color-moss)",
+        color: "var(--color-light-grey)",
+        padding: "10px 16px",
+        fontSize: 13,
+        fontWeight: 500,
+        border: "none",
+        cursor: exporting ? "default" : "pointer",
+        opacity: exporting ? 0.5 : 1,
+        transition: "background .12s",
+      }}
+      className="print:hidden"
     >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
         <polyline points="7 10 12 15 17 10" />
         <line x1="12" y1="15" x2="12" y2="3" />

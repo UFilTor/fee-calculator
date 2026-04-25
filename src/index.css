@@ -1,21 +1,74 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --color-understory: #2d6a4f;
-  --color-understory-light: #d8f3dc;
-  --color-understory-dark: #1b4332;
-  --color-stripe: #6b7280;
-  --color-stripe-light: #f3f4f6;
-  --color-savings: #059669;
-  --color-savings-bg: #ecfdf5;
+@font-face {
+  font-family: "National 2 Condensed";
+  src: url("./assets/national-2-condensed-medium.ttf") format("truetype");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
 }
 
+@theme {
+  --font-sans: "Inter", "Inter Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "National 2 Condensed", "Oswald", "Impact", sans-serif;
+
+  /* Brand palette */
+  --color-moss: #022c12;
+  --color-lichen: #d5dfca;
+  --color-rust: #933f29;
+  --color-red: #7e0c04;
+  --color-citrus: #f0f97e;
+  --color-beige: #ede8d0;
+  --color-light-grey: #f8f6ed;
+  --color-off-white: #fefdfb;
+  --color-ink: #17181a;
+  --color-muted: #99968a;
+  --color-dark-blue: #091329;
+}
+
+:root {
+  --border: rgba(2, 44, 18, 0.12);
+}
+
+html,
 body {
-  font-family: var(--font-sans);
-  background-color: #fafafa;
-  color: #1f2937;
   margin: 0;
+  padding: 0;
+  background: var(--color-light-grey);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  min-height: 100%;
+}
+
+/* Hide native number-input spinners */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* Type helpers */
+.u-label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.u-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
 
 @media print {

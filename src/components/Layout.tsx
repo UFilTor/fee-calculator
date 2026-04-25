@@ -2,8 +2,22 @@ import type { ReactNode } from "react";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-4 sm:py-8 sm:px-6 lg:px-8">
-      {children}
+    <div
+      style={{
+        background: "var(--color-light-grey)",
+        minHeight: "100%",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 920,
+          margin: "0 auto",
+          padding: "24px 24px 32px",
+        }}
+        className="sm:px-12"
+      >
+        {children}
+      </div>
     </div>
   );
 }

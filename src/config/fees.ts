@@ -42,7 +42,8 @@ export const countries: Record<CountryCode, Country> = {
 export const paymentMethods: PaymentMethod[] = [
   {
     id: "card",
-    label: "Card (EEA Visa/Mastercard)",
+    label: "Card",
+    sub: "EEA Visa / Mastercard",
     icon: "card",
     fees: {
       SE: {
@@ -66,6 +67,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "swish",
     label: "Swish",
+    sub: "Sweden",
     icon: "swish",
     fees: {
       SE: {
@@ -77,6 +79,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "vipps",
     label: "Vipps",
+    sub: "Norway",
     icon: "vipps",
     fees: {
       NO: {
@@ -88,6 +91,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "mobilepay",
     label: "MobilePay",
+    sub: "Denmark",
     icon: "mobilepay",
     fees: {
       DK: {
@@ -102,6 +106,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "klarna-pay-now",
     label: "Klarna Pay Now",
+    sub: "Klarna",
     icon: "klarna",
     fees: {
       SE: {
@@ -113,6 +118,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "klarna-pay-over-time",
     label: "Klarna Pay Over Time",
+    sub: "Klarna",
     icon: "klarna",
     fees: {
       SE: {
@@ -128,6 +134,7 @@ export const paymentMethods: PaymentMethod[] = [
   {
     id: "klarna-buy-now-pay-later",
     label: "Klarna Buy Now, Pay Later",
+    sub: "Klarna",
     icon: "klarna",
     fees: {
       SE: {
