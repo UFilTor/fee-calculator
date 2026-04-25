@@ -94,8 +94,11 @@ export default function App() {
             maxWidth: 720,
           }}
         >
-          See what you'd save with{" "}
-          <span style={{ color: "var(--color-rust)" }}>Understory Pay</span>
+          See what you'd save with
+          <br />
+          <span style={{ color: "var(--color-rust)", whiteSpace: "nowrap" }}>
+            Understory Pay
+          </span>
         </h1>
 
         {/* Top controls surface */}
