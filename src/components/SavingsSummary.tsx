@@ -71,27 +71,35 @@ export default function SavingsSummary({
           background: "var(--color-moss)",
           color: "var(--color-light-grey)",
           padding: "20px 28px",
-          overflow: "hidden",
           isolation: "isolate",
         }}
       >
-        <img
-          src={wiggleDots}
-          alt=""
+        <div
           aria-hidden
           style={{
             position: "absolute",
-            right: -60,
-            top: -60,
-            width: 360,
-            height: 360,
-            objectFit: "cover",
-            opacity: 0.35,
-            mixBlendMode: "screen",
-            zIndex: 0,
+            inset: 0,
+            borderRadius: "inherit",
+            overflow: "hidden",
             pointerEvents: "none",
+            zIndex: 0,
           }}
-        />
+        >
+          <img
+            src={wiggleDots}
+            alt=""
+            style={{
+              position: "absolute",
+              right: -60,
+              top: -60,
+              width: 360,
+              height: 360,
+              objectFit: "cover",
+              opacity: 0.35,
+              mixBlendMode: "screen",
+            }}
+          />
+        </div>
 
         <div
           style={{
@@ -232,7 +240,7 @@ export default function SavingsSummary({
                     <div
                       style={{
                         position: "absolute",
-                        top: "calc(100% + 4px)",
+                        top: "calc(100% + 6px)",
                         left: 60,
                         background: "var(--color-off-white)",
                         color: "var(--color-ink)",

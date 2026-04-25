@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Retune } from "retune";
 import type { CountryCode } from "./types";
+import understoryLogo from "./assets/understory-logo-mark.png";
 import { countries } from "./config/fees";
 import { useCalculator } from "./hooks/useCalculator";
 import { getInitialStateFromUrl, useSyncUrlState } from "./hooks/useUrlState";
@@ -49,26 +50,17 @@ export default function App() {
       >
         {/* Logo + eyebrow */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div
-            className="text-left"
+          <img
+            src={understoryLogo}
+            alt="Understory"
             style={{
               width: 44,
               height: 44,
               borderRadius: 10,
-              background: "var(--color-moss)",
-              color: "var(--color-citrus)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-display)",
-              fontSize: 26,
-              fontWeight: 700,
-              lineHeight: 1,
-              letterSpacing: "-0.03em",
+              objectFit: "cover",
+              display: "block",
             }}
-          >
-            U
-          </div>
+          />
           <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <span
               className="u-label"
