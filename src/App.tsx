@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { Retune } from "retune";
 import type { CountryCode } from "./types";
 import understoryLogo from "./assets/understory-logo-mark.png";
@@ -19,7 +19,14 @@ export default function App() {
   const [bookingAmount, setBookingAmount] = useState(initialState.bookingAmount);
   const [monthlyTransactions, setMonthlyTransactions] = useState(initialState.monthlyTransactions);
   const [selectedMethodIds, setSelectedMethodIds] = useState<string[]>([]);
+  const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
   const exportRef = useRef<HTMLDivElement>(null);
+
+  if (prevCountryCode !== countryCode) {
+    setPrevCountryCode(countryCode);
+    setBookingAmount(countries[countryCode].defaultAmount);
+    setSelectedMethodIds([]);
+  }
 
   const country = countries[countryCode];
   const {
@@ -29,18 +36,11 @@ export default function App() {
     availableMethods,
   } = useCalculator(countryCode, bookingAmount, monthlyTransactions, selectedMethodIds);
 
+  if (selectedMethodIds.length === 0 && availableMethods.length > 0) {
+    setSelectedMethodIds(availableMethods.map((m) => m.id));
+  }
+
   useSyncUrlState(countryCode, bookingAmount, monthlyTransactions);
-
-  useEffect(() => {
-    setBookingAmount(countries[countryCode].defaultAmount);
-    setSelectedMethodIds([]);
-  }, [countryCode]);
-
-  useEffect(() => {
-    if (selectedMethodIds.length === 0 && availableMethods.length > 0) {
-      setSelectedMethodIds(availableMethods.map((m) => m.id));
-    }
-  }, [availableMethods, selectedMethodIds.length]);
 
   return (
     <Layout>

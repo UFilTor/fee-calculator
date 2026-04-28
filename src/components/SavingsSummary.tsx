@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from "react";
 import type { Country } from "../types";
 import type { SavingsBreakdown } from "../hooks/useCalculator";
 import { formatCurrency } from "../utils/formatting";
-import wiggleDots from "../assets/wiggle-dots-3.png";
 
 interface Props {
   savingsBreakdown: SavingsBreakdown[];
@@ -74,34 +73,7 @@ export default function SavingsSummary({
           isolation: "isolate",
         }}
       >
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "inherit",
-            overflow: "hidden",
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        >
-          <img
-            src={wiggleDots}
-            alt=""
-            style={{
-              position: "absolute",
-              right: -60,
-              top: -60,
-              width: 360,
-              height: 360,
-              objectFit: "cover",
-              opacity: 0.35,
-              mixBlendMode: "screen",
-            }}
-          />
-        </div>
-
-        <div
+<div
           style={{
             position: "relative",
             zIndex: 1,

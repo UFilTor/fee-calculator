@@ -31,7 +31,7 @@ export function useCalculator(
 
         return { method, understoryFee, stripeFee, savingsPercent };
       });
-  }, [countryCode, bookingAmount, monthlyTransactions]);
+  }, [countryCode, bookingAmount]);
 
   // Only calculate savings for selected methods, split evenly
   const selectedRows = useMemo(
