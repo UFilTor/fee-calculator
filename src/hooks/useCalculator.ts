@@ -65,12 +65,12 @@ export function useCalculator(
     [selectedRows, txnsPerMethod]
   );
 
-  // Available methods for the dropdown (only those with Stripe comparison in this country)
+  // All methods offered in the country, including ones with no Stripe
+  // comparison (e.g. MobilePay in DK). Methods without a Stripe rate
+  // contribute nothing to the savings calc, but they still appear as
+  // chips so the user can see the full Understory Pay coverage.
   const availableMethods = useMemo(
-    () =>
-      rows
-        .filter((r) => r.stripeFee !== null)
-        .map((r) => ({ id: r.method.id, label: r.method.label })),
+    () => rows.map((r) => ({ id: r.method.id, label: r.method.label })),
     [rows]
   );
 

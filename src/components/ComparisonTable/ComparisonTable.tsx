@@ -16,15 +16,7 @@ export default function ComparisonTable({ rows, country }: Props) {
         padding: "4px 24px 8px",
       }}
     >
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 64px",
-          gap: 18,
-          padding: "10px 4px 6px",
-          alignItems: "center",
-        }}
-      >
+      <div className="fee-header">
         <div className="u-label" style={{ color: "var(--color-muted)" }}>
           Payment method
         </div>

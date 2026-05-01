@@ -28,6 +28,31 @@
 
 :root {
   --border: rgba(2, 44, 18, 0.12);
+  --focus-ring: rgba(2, 44, 18, 0.55);
+  --focus-ring-light: rgba(240, 249, 126, 0.75);
+}
+
+/* Visually hidden, screen-reader accessible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard-only focus rings. Mouse users see no extra outline. */
+:where(button, [role="button"], [role="radio"], [role="menuitemcheckbox"], a, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.focus-light:focus-visible {
+  outline-color: var(--focus-ring-light);
 }
 
 html,
@@ -69,6 +94,95 @@ button {
   font-weight: 700;
   letter-spacing: -0.02em;
   text-transform: uppercase;
+}
+
+/* Savings hero: at narrow widths the number column wraps below the
+   label/inputs column. Right-alignment in that case leaves dead space
+   above the number, so left-align on wrap. */
+@media (max-width: 720px) {
+  .savings-hero-row {
+    justify-content: flex-start !important;
+  }
+  .savings-hero-number {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+  .savings-hero-number > div:first-child {
+    text-align: left !important;
+  }
+}
+
+/* Country pill hover (off state only — selected pill is solid moss
+   and doesn't need a separate hover). Subtle tint, not a fill. */
+.country-pill:not([aria-checked="true"]):hover {
+  background: rgba(2, 44, 18, 0.05) !important;
+  border-color: rgba(2, 44, 18, 0.25) !important;
+}
+
+/* Booking-amount input: faint resting border so the moss line doesn't
+   read as a focus indicator at rest. Saturates to full moss on focus. */
+.amount-input {
+  border-bottom: 2px solid rgba(2, 44, 18, 0.18);
+  transition: border-color .12s ease-out;
+}
+.amount-input:focus {
+  border-bottom-color: var(--color-moss);
+}
+
+/* Comparison table: 4-column grid on desktop, stacked rows below 480px.
+   Mobile layout: method label spans the row; the two fee cells share a
+   2-column row beneath it; the savings badge gets its own right-aligned
+   row below that. */
+.fee-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 4px;
+}
+.fee-row:not(:first-child) {
+  border-top: 1px solid var(--border);
+}
+.fee-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 64px;
+  gap: 18px;
+  padding: 10px 4px 6px;
+  align-items: center;
+}
+.fee-cell-mobile-label {
+  display: none;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 4px;
+}
+@media (max-width: 480px) {
+  .fee-header {
+    display: none;
+  }
+  .fee-row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "method method"
+      "u-label s-label"
+      "u-cell s-cell"
+      "badge badge";
+    column-gap: 14px;
+    row-gap: 6px;
+    padding: 14px 4px;
+  }
+  .fee-row > .fee-method { grid-area: method; margin-bottom: 4px; }
+  .fee-row > .fee-cell-mobile-label.u { grid-area: u-label; }
+  .fee-row > .fee-cell-mobile-label.s { grid-area: s-label; }
+  .fee-row > .fee-cell.u { grid-area: u-cell; }
+  .fee-row > .fee-cell.s { grid-area: s-cell; }
+  .fee-row > .fee-badge { grid-area: badge; justify-self: end; }
+  .fee-cell-mobile-label { display: block; }
 }
 
 @media print {

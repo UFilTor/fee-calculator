@@ -6,7 +6,6 @@ import MethodIcon from "./MethodIcon";
 interface Props {
   row: CalculatedRow;
   country: Country;
-  isLast?: boolean;
 }
 
 export default function TableRow({ row, country }: Props) {
@@ -14,17 +13,11 @@ export default function TableRow({ row, country }: Props) {
   const countryFees = method.fees[country.code]!;
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr) 64px",
-        alignItems: "center",
-        gap: 18,
-        padding: "12px 4px",
-        borderTop: "1px solid var(--border)",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+    <div className="fee-row">
+      <div
+        className="fee-method"
+        style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}
+      >
         <MethodIcon icon={method.icon} size={36} />
         <div style={{ minWidth: 0 }}>
           <div
@@ -51,19 +44,29 @@ export default function TableRow({ row, country }: Props) {
           )}
         </div>
       </div>
-      <FeeCell
-        fee={understoryFee}
-        country={country}
-        breakdown={countryFees.understory}
-        variant="understory"
-      />
-      <FeeCell
-        fee={stripeFee}
-        country={country}
-        breakdown={countryFees.stripe}
-        variant="stripe"
-      />
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+
+      {/* Mobile-only labels (display:none on desktop). */}
+      <div className="fee-cell-mobile-label u">Understory Pay</div>
+      <div className="fee-cell-mobile-label s">Stripe</div>
+
+      <div className="fee-cell u">
+        <FeeCell
+          fee={understoryFee}
+          country={country}
+          breakdown={countryFees.understory}
+          variant="understory"
+        />
+      </div>
+      <div className="fee-cell s">
+        <FeeCell
+          fee={stripeFee}
+          country={country}
+          breakdown={countryFees.stripe}
+          variant="stripe"
+        />
+      </div>
+
+      <div className="fee-badge" style={{ display: "flex", justifyContent: "flex-end" }}>
         {savingsPercent !== null && <SavingsBadge percent={savingsPercent} />}
       </div>
     </div>

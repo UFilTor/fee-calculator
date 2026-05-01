@@ -40,6 +40,12 @@ export function useSyncUrlState(
   monthlyTransactions: number
 ) {
   useEffect(() => {
-    window.history.replaceState(null, "", window.location.pathname);
+    const params = new URLSearchParams();
+    params.set("country", countryCode);
+    params.set("amount", String(bookingAmount));
+    params.set("txns", String(monthlyTransactions));
+
+    const next = `${window.location.pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", next);
   }, [countryCode, bookingAmount, monthlyTransactions]);
 }

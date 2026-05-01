@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import type { Country } from "../types";
 import type { SavingsBreakdown } from "../hooks/useCalculator";
 import { formatCurrency } from "../utils/formatting";
@@ -6,6 +6,7 @@ import { formatCurrency } from "../utils/formatting";
 interface Props {
   savingsBreakdown: SavingsBreakdown[];
   totalAnnualSavings: number;
+  totalAnnualStripe: number;
   monthlyTransactions: number;
   onMonthlyTransactionsChange: (value: number) => void;
   bookingAmount: number;
@@ -18,6 +19,7 @@ interface Props {
 export default function SavingsSummary({
   savingsBreakdown,
   totalAnnualSavings,
+  totalAnnualStripe,
   monthlyTransactions,
   onMonthlyTransactionsChange,
   bookingAmount,
@@ -26,25 +28,25 @@ export default function SavingsSummary({
   selectedMethodIds,
   onSelectedMethodsChange,
 }: Props) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [txnInputValue, setTxnInputValue] = useState(String(monthlyTransactions));
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [prevTxn, setPrevTxn] = useState(monthlyTransactions);
+  const [methodologyOpen, setMethodologyOpen] = useState(false);
 
-  useEffect(() => {
+  if (prevTxn !== monthlyTransactions) {
+    setPrevTxn(monthlyTransactions);
     setTxnInputValue(String(monthlyTransactions));
-  }, [monthlyTransactions]);
+  }
 
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
+  const allOn = selectedMethodIds.length === availableMethods.length;
+
+  // cmd / ctrl / shift click on a chip selects only that method ("solo");
+  // plain click toggles. Last-on chip is disabled to prevent zero
+  // selection.
+  const handleChipClick = (id: string, e: React.MouseEvent) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey) {
+      onSelectedMethodsChange([id]);
+      return;
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  const toggleMethod = (id: string) => {
     if (selectedMethodIds.includes(id)) {
       if (selectedMethodIds.length > 1) {
         onSelectedMethodsChange(selectedMethodIds.filter((m) => m !== id));
@@ -54,16 +56,16 @@ export default function SavingsSummary({
     }
   };
 
-  const allOn = selectedMethodIds.length === availableMethods.length;
-  const selectedLabel = allOn
-    ? "All methods"
-    : selectedMethodIds.length === 1
-      ? availableMethods.find((m) => m.id === selectedMethodIds[0])?.label ?? ""
-      : `${selectedMethodIds.length} methods`;
+  const isLoss = totalAnnualSavings < 0;
+  const headline = isLoss
+    ? "Stripe is cheaper for this mix"
+    : "Estimated annual savings";
+  const monthly = totalAnnualSavings / 12;
 
   return (
     <div className="space-y-3">
       <div
+        className="print-soft"
         style={{
           position: "relative",
           borderRadius: 20,
@@ -73,7 +75,7 @@ export default function SavingsSummary({
           isolation: "isolate",
         }}
       >
-<div
+        <div
           style={{
             position: "relative",
             zIndex: 1,
@@ -83,6 +85,7 @@ export default function SavingsSummary({
           }}
         >
           <div
+            className="savings-hero-row"
             style={{
               display: "flex",
               alignItems: "flex-end",
@@ -100,11 +103,62 @@ export default function SavingsSummary({
               }}
             >
               <div
-                className="u-label"
-                style={{ color: "var(--color-citrus)" }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
               >
-                Estimated annual savings
+                <span
+                  className="u-label"
+                  style={{ color: isLoss ? "var(--color-light-grey)" : "var(--color-citrus)" }}
+                >
+                  {headline}
+                </span>
+                <button
+                  type="button"
+                  aria-label="How is this calculated?"
+                  aria-expanded={methodologyOpen}
+                  onClick={() => setMethodologyOpen((v) => !v)}
+                  className="focus-light"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: 18,
+                    height: 18,
+                    borderRadius: 999,
+                    border: "1px solid rgba(248,246,237,0.45)",
+                    background: "transparent",
+                    color: "rgba(248,246,237,0.82)",
+                    fontSize: 11,
+                    fontWeight: 600,
+                    fontFamily: "inherit",
+                    cursor: "pointer",
+                    lineHeight: 1,
+                    padding: 0,
+                  }}
+                >
+                  ?
+                </button>
               </div>
+
+              {methodologyOpen && (
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 11.5,
+                    lineHeight: 1.5,
+                    color: "rgba(248,246,237,0.78)",
+                    maxWidth: "55ch",
+                  }}
+                >
+                  Stripe rates from public pricing. Excludes 3DS
+                  authentication, chargebacks, and currency conversion.
+                  Understory Pay rates per active contract.
+                </p>
+              )}
+
               <div
                 style={{
                   display: "flex",
@@ -112,15 +166,19 @@ export default function SavingsSummary({
                   alignItems: "center",
                   gap: 6,
                   fontSize: 13,
-                  color: "rgba(248,246,237,0.65)",
+                  color: "rgba(248,246,237,0.82)",
                   lineHeight: 1.5,
                 }}
               >
                 <span>Based on</span>
+                <label htmlFor="monthly-txns" className="sr-only">Monthly transactions</label>
                 <input
+                  id="monthly-txns"
                   type="number"
                   min={1}
                   value={txnInputValue}
+                  aria-label="Monthly transactions"
+                  className="focus-light"
                   onChange={(e) => {
                     setTxnInputValue(e.target.value);
                     const v = parseInt(e.target.value, 10);
@@ -135,14 +193,13 @@ export default function SavingsSummary({
                   style={{
                     width: 64,
                     padding: "4px 8px",
-                    borderRadius: 6,
+                    borderRadius: 8,
                     border: "none",
                     background: "rgba(255,255,255,0.10)",
                     color: "var(--color-light-grey)",
                     fontSize: 13,
                     fontWeight: 600,
                     textAlign: "center",
-                    outline: "none",
                     fontFamily: "inherit",
                     fontVariantNumeric: "tabular-nums",
                   }}
@@ -158,154 +215,150 @@ export default function SavingsSummary({
                 </span>
               </div>
 
+              {/* Inline method chips: visible-by-default toggles. Plain
+                  click toggles, cmd/ctrl/shift click solos. The "All"
+                  link to the right resets to all-on. */}
               {availableMethods.length > 1 && (
                 <div
-                  ref={dropdownRef}
+                  role="group"
+                  aria-label="Methods included in calculation"
                   style={{
-                    position: "relative",
                     display: "flex",
+                    flexWrap: "wrap",
                     alignItems: "center",
-                    gap: 8,
+                    gap: 6,
                     fontSize: 12,
-                    color: "rgba(248,246,237,0.65)",
+                    color: "rgba(248,246,237,0.82)",
                     marginTop: 2,
                   }}
                 >
-                  <span>Includes</span>
-                  <button
-                    type="button"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      padding: "4px 10px",
-                      borderRadius: 6,
-                      border: "none",
-                      background: "rgba(255,255,255,0.10)",
-                      color: "var(--color-light-grey)",
-                      fontSize: 12,
-                      fontWeight: 500,
-                      cursor: "pointer",
-                      fontFamily: "inherit",
-                    }}
-                  >
-                    <span>{selectedLabel}</span>
-                    <svg
-                      width="10"
-                      height="10"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                  <span style={{ marginRight: 2 }}>Includes</span>
+                  {availableMethods.map((m) => {
+                    const on = selectedMethodIds.includes(m.id);
+                    const isLastOn = on && selectedMethodIds.length === 1;
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        role="checkbox"
+                        aria-checked={on}
+                        aria-label={`Include ${m.label}`}
+                        disabled={isLastOn}
+                        onClick={(e) => handleChipClick(m.id, e)}
+                        title={`${m.label} (⌘/Ctrl-click to solo)`}
+                        className="focus-light"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: 6,
+                          padding: "3px 9px",
+                          borderRadius: 999,
+                          border: on
+                            ? "1px solid rgba(240,249,126,0.6)"
+                            : "1px solid rgba(248,246,237,0.32)",
+                          background: on ? "rgba(240,249,126,0.14)" : "transparent",
+                          color: on ? "var(--color-citrus)" : "rgba(248,246,237,0.82)",
+                          fontSize: 12,
+                          fontWeight: 500,
+                          fontFamily: "inherit",
+                          cursor: isLastOn ? "default" : "pointer",
+                          opacity: isLastOn ? 0.85 : 1,
+                          transition: "background .12s, color .12s, border-color .12s",
+                        }}
+                      >
+                        <span
+                          aria-hidden
+                          style={{
+                            width: 6,
+                            height: 6,
+                            borderRadius: 999,
+                            background: on ? "var(--color-citrus)" : "transparent",
+                            border: on ? "none" : "1px solid rgba(248,246,237,0.5)",
+                          }}
+                        />
+                        {m.label}
+                      </button>
+                    );
+                  })}
+                  {!allOn && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onSelectedMethodsChange(availableMethods.map((m) => m.id))
+                      }
+                      className="focus-light"
                       style={{
-                        transform: dropdownOpen ? "rotate(180deg)" : "none",
-                        transition: "transform .15s",
+                        marginLeft: 4,
+                        padding: "3px 4px",
+                        background: "transparent",
+                        border: "none",
+                        color: "rgba(248,246,237,0.82)",
+                        fontSize: 12,
+                        fontWeight: 500,
+                        fontFamily: "inherit",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                        textUnderlineOffset: 2,
                       }}
                     >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                  {dropdownOpen && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: "calc(100% + 6px)",
-                        left: 60,
-                        background: "var(--color-off-white)",
-                        color: "var(--color-ink)",
-                        border: "1px solid var(--border)",
-                        borderRadius: 10,
-                        padding: 4,
-                        minWidth: 220,
-                        zIndex: 30,
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
-                      }}
-                    >
-                      {availableMethods.map((m) => {
-                        const on = selectedMethodIds.includes(m.id);
-                        return (
-                          <button
-                            key={m.id}
-                            type="button"
-                            onClick={() => toggleMethod(m.id)}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 8,
-                              width: "100%",
-                              padding: "6px 10px",
-                              border: "none",
-                              background: "transparent",
-                              cursor: "pointer",
-                              borderRadius: 6,
-                              textAlign: "left",
-                              fontFamily: "inherit",
-                              color: "var(--color-ink)",
-                              fontSize: 13,
-                            }}
-                            onMouseEnter={(e) =>
-                              (e.currentTarget.style.background = "rgba(2,44,18,0.06)")
-                            }
-                            onMouseLeave={(e) =>
-                              (e.currentTarget.style.background = "transparent")
-                            }
-                          >
-                            <span
-                              style={{
-                                width: 16,
-                                height: 16,
-                                borderRadius: 4,
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                background: on ? "var(--color-moss)" : "transparent",
-                                border: on
-                                  ? "1px solid var(--color-moss)"
-                                  : "1px solid rgba(2,44,18,0.25)",
-                                color: "var(--color-citrus)",
-                              }}
-                            >
-                              {on && (
-                                <svg
-                                  width="10"
-                                  height="10"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="3"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                              )}
-                            </span>
-                            <span>{m.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                      All
+                    </button>
                   )}
                 </div>
               )}
             </div>
+
+            {/* The number, with anchor + monthly framing. */}
             <div
+              className="savings-hero-number"
               style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 700,
-                fontSize: "clamp(48px, 7vw, 72px)",
-                lineHeight: 0.9,
-                letterSpacing: "-0.02em",
-                color: "var(--color-citrus)",
-                fontVariantNumeric: "tabular-nums",
-                textTransform: "uppercase",
-                textAlign: "right",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
+                gap: 4,
+                minWidth: 0,
               }}
             >
-              {formatCurrency(totalAnnualSavings, country)}
+              {!isLoss && totalAnnualStripe > 0 && (
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "rgba(248,246,237,0.65)",
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  On Stripe today: ≈ {formatCurrency(totalAnnualStripe, country)} / yr
+                </div>
+              )}
+              <div
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: "clamp(48px, 7vw, 72px)",
+                  lineHeight: 0.9,
+                  letterSpacing: "-0.02em",
+                  color: isLoss ? "var(--color-light-grey)" : "var(--color-citrus)",
+                  fontVariantNumeric: "tabular-nums",
+                  textTransform: "uppercase",
+                  textAlign: "right",
+                }}
+              >
+                {formatCurrency(Math.abs(totalAnnualSavings), country)}
+              </div>
+              {Math.abs(totalAnnualSavings) >= 1 && (
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: "rgba(248,246,237,0.82)",
+                    fontVariantNumeric: "tabular-nums",
+                    letterSpacing: "0.01em",
+                  }}
+                >
+                  {isLoss ? "extra " : ""}≈ {formatCurrency(Math.abs(monthly), country)} / month
+                </div>
+              )}
             </div>
           </div>
 
@@ -327,7 +380,7 @@ export default function SavingsSummary({
                   <span
                     style={{
                       fontSize: 11,
-                      color: "rgba(248,246,237,0.65)",
+                      color: "rgba(248,246,237,0.82)",
                       letterSpacing: "0.02em",
                       textTransform: "uppercase",
                     }}
@@ -349,9 +402,20 @@ export default function SavingsSummary({
               ))}
             </div>
           )}
+
+          {/* Single-line provenance citation. Brings back the credibility
+              cue without the previous paragraph's visual weight. */}
+          <div
+            style={{
+              fontSize: 11,
+              color: "rgba(248,246,237,0.55)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            Stripe and Understory Pay public rates, May 2026.
+          </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -9,17 +9,35 @@ interface Props {
 }
 
 export default function CountrySelector({ selected, onChange }: Props) {
+  // Roving tabindex pattern: only the active radio is in the tab order;
+  // arrow keys move both focus and selection between options.
+  const handleKey = (e: React.KeyboardEvent, idx: number) => {
+    const last = countryOrder.length - 1;
+    let next = idx;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = idx === last ? 0 : idx + 1;
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = idx === 0 ? last : idx - 1;
+    else return;
+    e.preventDefault();
+    const code = countryOrder[next];
+    onChange(code);
+    document.getElementById(`country-${code}`)?.focus();
+  };
+
   return (
     <div role="radiogroup" aria-label="Select country" className="flex flex-wrap gap-2">
-      {countryOrder.map((code) => {
+      {countryOrder.map((code, idx) => {
         const country = countries[code];
         const isSelected = selected === code;
         return (
           <button
             key={code}
+            id={`country-${code}`}
             role="radio"
             aria-checked={isSelected}
+            tabIndex={isSelected ? 0 : -1}
+            className="country-pill"
             onClick={() => onChange(code)}
+            onKeyDown={(e) => handleKey(e, idx)}
             style={{
               display: "inline-flex",
               alignItems: "center",

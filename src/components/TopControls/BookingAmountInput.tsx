@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Country } from "../../types";
 
 interface Props {
@@ -9,10 +9,15 @@ interface Props {
 
 export default function BookingAmountInput({ value, onChange, country }: Props) {
   const [display, setDisplay] = useState(String(value));
+  const [prevValue, setPrevValue] = useState(value);
 
-  useEffect(() => {
+  // Adjust during render when the parent's value changes (e.g. country
+  // switch resets the booking amount). Convergent: only fires when input
+  // and synced display diverge.
+  if (prevValue !== value) {
+    setPrevValue(value);
     setDisplay(String(value));
-  }, [value]);
+  }
 
   return (
     <div style={{ display: "flex", alignItems: "baseline", gap: 14, minWidth: 0 }}>
@@ -29,6 +34,7 @@ export default function BookingAmountInput({ value, onChange, country }: Props) 
           type="number"
           min={1}
           value={display}
+          className="amount-input"
           onChange={(e) => {
             setDisplay(e.target.value);
             const v = parseInt(e.target.value, 10);
@@ -48,9 +54,7 @@ export default function BookingAmountInput({ value, onChange, country }: Props) 
             letterSpacing: "-0.01em",
             color: "var(--color-moss)",
             border: "none",
-            borderBottom: "2px solid var(--color-moss)",
             background: "transparent",
-            outline: "none",
             padding: "2px 0",
             textAlign: "left",
             fontVariantNumeric: "tabular-nums",

@@ -1,73 +1,22 @@
-# React + TypeScript + Vite
+# Understory Pay Fee Calculator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Internal tool used by Understory's CS team to compare Understory Pay rates against Stripe for prospects in Sweden, Norway, Denmark, and Italy. The page renders an annual savings figure based on a typical booking amount and monthly transaction volume, with a per-method breakdown for the customer's market. Reps share the link or PNG export during sales calls.
 
-Currently, two official plugins are available:
+## Run locally
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Build with `npm run build`, lint with `npm run lint`. Vite + React 19 + TypeScript, no test runner configured.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Where things live
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- `src/config/fees.ts`: source of truth for country pricing. Add a country or change a Stripe / Understory rate here.
+- `src/hooks/useCalculator.ts`: derives table rows, breakdown, and totals from `selectedMethodIds`.
+- `src/components/SavingsSummary.tsx`: the moss savings card. Headline, monthly framing, and method chips.
+- `src/components/ComparisonTable/`: per-method fee table with mobile-stack layout below 480px.
+- `src/hooks/useUrlState.ts`: country + amount + transaction count sync to URL so reps can share a configured view.
+
+URL params: `?country=SE|NO|DK|IT&amount=<int>&txns=<int>`. Method filtering is session-only; toggling chips does not persist.

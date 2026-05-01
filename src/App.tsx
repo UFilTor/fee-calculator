@@ -1,5 +1,4 @@
-import { useState, useRef } from "react";
-import { Retune } from "retune";
+import { lazy, Suspense, useState, useRef } from "react";
 import type { CountryCode } from "./types";
 import understoryLogo from "./assets/understory-logo-mark.png";
 import { countries } from "./config/fees";
@@ -10,7 +9,11 @@ import CountrySelector from "./components/TopControls/CountrySelector";
 import BookingAmountInput from "./components/TopControls/BookingAmountInput";
 import ComparisonTable from "./components/ComparisonTable/ComparisonTable";
 import SavingsSummary from "./components/SavingsSummary";
-import ExportButton from "./components/ExportButton";
+
+const ExportButton = lazy(() => import("./components/ExportButton"));
+const Retune = import.meta.env.DEV
+  ? lazy(() => import("retune").then((m) => ({ default: m.Retune })))
+  : null;
 
 const initialState = getInitialStateFromUrl();
 
@@ -22,9 +25,18 @@ export default function App() {
   const [prevCountryCode, setPrevCountryCode] = useState(countryCode);
   const exportRef = useRef<HTMLDivElement>(null);
 
-  if (prevCountryCode !== countryCode) {
+  // On country change, only reset the booking amount when the user is
+  // still on the previous country's default. Custom amounts carry over,
+  // so a typed "1200" in SE stays "1200" in NO. Method selection always
+  // resets because available methods differ per country; the all-methods
+  // auto-fill below picks it up on the next render.
+  const isCountryChanging = prevCountryCode !== countryCode;
+  if (isCountryChanging) {
+    const prevDefault = countries[prevCountryCode].defaultAmount;
     setPrevCountryCode(countryCode);
-    setBookingAmount(countries[countryCode].defaultAmount);
+    if (bookingAmount === prevDefault) {
+      setBookingAmount(countries[countryCode].defaultAmount);
+    }
     setSelectedMethodIds([]);
   }
 
@@ -33,11 +45,17 @@ export default function App() {
     rows,
     savingsBreakdown,
     totalAnnualSavings,
+    totalMonthlyStripe,
     availableMethods,
   } = useCalculator(countryCode, bookingAmount, monthlyTransactions, selectedMethodIds);
 
-  if (selectedMethodIds.length === 0 && availableMethods.length > 0) {
-    setSelectedMethodIds(availableMethods.map((m) => m.id));
+  // Default to all methods on. Skipped during a country switch so the
+  // reset above isn't immediately overwritten by a filtered subset of
+  // the previous country's selections.
+  if (!isCountryChanging) {
+    if (selectedMethodIds.length === 0 && availableMethods.length > 0) {
+      setSelectedMethodIds(availableMethods.map((m) => m.id));
+    }
   }
 
   useSyncUrlState(countryCode, bookingAmount, monthlyTransactions);
@@ -56,28 +74,17 @@ export default function App() {
             style={{
               width: 44,
               height: 44,
-              borderRadius: 10,
+              borderRadius: 12,
               objectFit: "cover",
               display: "block",
             }}
           />
-          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <span
-              className="u-label"
-              style={{ color: "var(--color-moss)", fontSize: 11 }}
-            >
-              Understory Pay
-            </span>
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 500,
-                color: "var(--color-muted)",
-              }}
-            >
-              Fee comparison
-            </span>
-          </div>
+          <span
+            className="u-label"
+            style={{ color: "var(--color-moss)", fontSize: 18 }}
+          >
+            Understory Pay
+          </span>
         </div>
 
         {/* Hero headline */}
@@ -85,7 +92,7 @@ export default function App() {
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 700,
-            fontSize: "clamp(34px, 4.6vw, 52px)",
+            fontSize: "clamp(34px, 4.6vw, 50px)",
             lineHeight: 0.95,
             letterSpacing: "-0.02em",
             textTransform: "uppercase",
@@ -94,11 +101,7 @@ export default function App() {
             maxWidth: 720,
           }}
         >
-          See what you'd save with
-          <br />
-          <span style={{ color: "var(--color-rust)", whiteSpace: "nowrap" }}>
-            Understory Pay
-          </span>
+          See what you'd <span style={{ color: "var(--color-rust)" }}>save with Understory Pay</span>
         </h1>
 
         {/* Top controls surface */}
@@ -130,6 +133,7 @@ export default function App() {
         <SavingsSummary
           savingsBreakdown={savingsBreakdown}
           totalAnnualSavings={totalAnnualSavings}
+          totalAnnualStripe={totalMonthlyStripe * 12}
           monthlyTransactions={monthlyTransactions}
           onMonthlyTransactionsChange={setMonthlyTransactions}
           bookingAmount={bookingAmount}
@@ -141,10 +145,16 @@ export default function App() {
       </div>
 
       {/* Export & Footer (outside export area) */}
-      <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }}>
-        <ExportButton targetRef={exportRef} />
+      <div style={{ marginTop: 16, display: "flex", justifyContent: "flex-end" }} data-export-hide>
+        <Suspense fallback={null}>
+          <ExportButton targetRef={exportRef} />
+        </Suspense>
       </div>
-      <Retune />
+      {Retune && (
+        <Suspense fallback={null}>
+          <Retune />
+        </Suspense>
+      )}
     </Layout>
   );
 }

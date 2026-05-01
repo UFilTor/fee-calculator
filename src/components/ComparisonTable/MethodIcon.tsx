@@ -59,6 +59,10 @@ export default function MethodIcon({ icon, size = 42 }: Props) {
   const src = map[icon];
 
   if (src) {
+    // Klarna's pink ships hot on light surfaces and over-shouts the
+    // citrus accent in the savings card. Slightly desaturate so the
+    // logo still reads as Klarna without dominating the row.
+    const filter = icon === "klarna" ? "saturate(0.78)" : undefined;
     return (
       <div style={tile}>
         <img
@@ -70,6 +74,7 @@ export default function MethodIcon({ icon, size = 42 }: Props) {
             width: "auto",
             height: "auto",
             objectFit: "contain",
+            filter,
           }}
         />
       </div>
