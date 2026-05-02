@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Country } from "../types";
 import type { SavingsBreakdown } from "../hooks/useCalculator";
 import { formatCurrency } from "../utils/formatting";
@@ -31,22 +31,37 @@ export default function SavingsSummary({
   const [txnInputValue, setTxnInputValue] = useState(String(monthlyTransactions));
   const [prevTxn, setPrevTxn] = useState(monthlyTransactions);
   const [methodologyOpen, setMethodologyOpen] = useState(false);
+  const [methodsOpen, setMethodsOpen] = useState(false);
+  const methodsRef = useRef<HTMLDivElement>(null);
 
   if (prevTxn !== monthlyTransactions) {
     setPrevTxn(monthlyTransactions);
     setTxnInputValue(String(monthlyTransactions));
   }
 
+  // Close the methods popover on outside click or Escape; only attach
+  // listeners while open.
+  useEffect(() => {
+    if (!methodsOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (methodsRef.current && !methodsRef.current.contains(e.target as Node)) {
+        setMethodsOpen(false);
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setMethodsOpen(false);
+    }
+    document.addEventListener("mousedown", handleClick);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [methodsOpen]);
+
   const allOn = selectedMethodIds.length === availableMethods.length;
 
-  // cmd / ctrl / shift click on a chip selects only that method ("solo");
-  // plain click toggles. Last-on chip is disabled to prevent zero
-  // selection.
-  const handleChipClick = (id: string, e: React.MouseEvent) => {
-    if (e.metaKey || e.ctrlKey || e.shiftKey) {
-      onSelectedMethodsChange([id]);
-      return;
-    }
+  const toggleMethod = (id: string) => {
     if (selectedMethodIds.includes(id)) {
       if (selectedMethodIds.length > 1) {
         onSelectedMethodsChange(selectedMethodIds.filter((m) => m !== id));
@@ -55,6 +70,12 @@ export default function SavingsSummary({
       onSelectedMethodsChange([...selectedMethodIds, id]);
     }
   };
+
+  const triggerLabel = allOn
+    ? "All methods"
+    : selectedMethodIds.length === 1
+      ? availableMethods.find((m) => m.id === selectedMethodIds[0])?.label ?? "1 method"
+      : `${selectedMethodIds.length} methods`;
 
   const isLoss = totalAnnualSavings < 0;
   const headline = isLoss
@@ -215,94 +236,177 @@ export default function SavingsSummary({
                 </span>
               </div>
 
-              {/* Inline method chips: visible-by-default toggles. Plain
-                  click toggles, cmd/ctrl/shift click solos. The "All"
-                  link to the right resets to all-on. */}
+              {/* Methods dropdown: single-control trigger keeps the left
+                  column width predictable across countries so the
+                  savings number always right-aligns the same way. */}
               {availableMethods.length > 1 && (
                 <div
-                  role="group"
-                  aria-label="Methods included in calculation"
+                  ref={methodsRef}
                   style={{
+                    position: "relative",
                     display: "flex",
-                    flexWrap: "wrap",
                     alignItems: "center",
-                    gap: 6,
+                    gap: 8,
                     fontSize: 12,
                     color: "rgba(248,246,237,0.82)",
                     marginTop: 2,
                   }}
                 >
-                  <span style={{ marginRight: 2 }}>Includes</span>
-                  {availableMethods.map((m) => {
-                    const on = selectedMethodIds.includes(m.id);
-                    const isLastOn = on && selectedMethodIds.length === 1;
-                    return (
-                      <button
-                        key={m.id}
-                        type="button"
-                        role="checkbox"
-                        aria-checked={on}
-                        aria-label={`Include ${m.label}`}
-                        disabled={isLastOn}
-                        onClick={(e) => handleChipClick(m.id, e)}
-                        title={`${m.label} (⌘/Ctrl-click to solo)`}
-                        className="focus-light"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 6,
-                          padding: "3px 9px",
-                          borderRadius: 999,
-                          border: on
-                            ? "1px solid rgba(240,249,126,0.6)"
-                            : "1px solid rgba(248,246,237,0.32)",
-                          background: on ? "rgba(240,249,126,0.14)" : "transparent",
-                          color: on ? "var(--color-citrus)" : "rgba(248,246,237,0.82)",
-                          fontSize: 12,
-                          fontWeight: 500,
-                          fontFamily: "inherit",
-                          cursor: isLastOn ? "default" : "pointer",
-                          opacity: isLastOn ? 0.85 : 1,
-                          transition: "background .12s, color .12s, border-color .12s",
-                        }}
-                      >
-                        <span
-                          aria-hidden
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: 999,
-                            background: on ? "var(--color-citrus)" : "transparent",
-                            border: on ? "none" : "1px solid rgba(248,246,237,0.5)",
-                          }}
-                        />
-                        {m.label}
-                      </button>
-                    );
-                  })}
-                  {!allOn && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onSelectedMethodsChange(availableMethods.map((m) => m.id))
-                      }
-                      className="focus-light"
+                  <span>Includes</span>
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    aria-expanded={methodsOpen}
+                    onClick={() => setMethodsOpen((v) => !v)}
+                    className="focus-light"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "4px 10px",
+                      borderRadius: 8,
+                      border: "1px solid rgba(248,246,237,0.32)",
+                      background: "rgba(255,255,255,0.06)",
+                      color: "var(--color-light-grey)",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                    }}
+                  >
+                    <span>{triggerLabel}</span>
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       style={{
-                        marginLeft: 4,
-                        padding: "3px 4px",
-                        background: "transparent",
-                        border: "none",
-                        color: "rgba(248,246,237,0.82)",
-                        fontSize: 12,
-                        fontWeight: 500,
-                        fontFamily: "inherit",
-                        cursor: "pointer",
-                        textDecoration: "underline",
-                        textUnderlineOffset: 2,
+                        transform: methodsOpen ? "rotate(180deg)" : "none",
+                        transition: "transform .15s",
                       }}
                     >
-                      All
-                    </button>
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+                  {methodsOpen && (
+                    <div
+                      role="menu"
+                      aria-label="Methods to include"
+                      style={{
+                        position: "absolute",
+                        top: "calc(100% + 6px)",
+                        left: 60,
+                        background: "var(--color-off-white)",
+                        color: "var(--color-ink)",
+                        border: "1px solid var(--border)",
+                        borderRadius: 12,
+                        padding: 4,
+                        minWidth: 240,
+                        zIndex: 30,
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+                      }}
+                    >
+                      {availableMethods.map((m) => {
+                        const on = selectedMethodIds.includes(m.id);
+                        const isLastOn = on && selectedMethodIds.length === 1;
+                        return (
+                          <button
+                            key={m.id}
+                            type="button"
+                            role="menuitemcheckbox"
+                            aria-checked={on}
+                            disabled={isLastOn}
+                            onClick={() => toggleMethod(m.id)}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 10,
+                              width: "100%",
+                              padding: "7px 10px",
+                              border: "none",
+                              background: "transparent",
+                              cursor: isLastOn ? "default" : "pointer",
+                              borderRadius: 8,
+                              textAlign: "left",
+                              fontFamily: "inherit",
+                              color: "var(--color-ink)",
+                              fontSize: 13,
+                              opacity: isLastOn ? 0.6 : 1,
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isLastOn) {
+                                e.currentTarget.style.background = "rgba(2,44,18,0.06)";
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.background = "transparent";
+                            }}
+                          >
+                            <span
+                              aria-hidden
+                              style={{
+                                width: 16,
+                                height: 16,
+                                borderRadius: 4,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                background: on ? "var(--color-moss)" : "transparent",
+                                border: on
+                                  ? "1px solid var(--color-moss)"
+                                  : "1px solid rgba(2,44,18,0.25)",
+                                color: "var(--color-citrus)",
+                              }}
+                            >
+                              {on && (
+                                <svg
+                                  width="10"
+                                  height="10"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </span>
+                            <span>{m.label}</span>
+                          </button>
+                        );
+                      })}
+                      {!allOn && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onSelectedMethodsChange(availableMethods.map((m) => m.id));
+                          }}
+                          style={{
+                            marginTop: 4,
+                            padding: "7px 10px",
+                            width: "100%",
+                            border: "none",
+                            borderTop: "1px solid var(--border)",
+                            borderRadius: 0,
+                            background: "transparent",
+                            color: "var(--color-moss)",
+                            fontFamily: "inherit",
+                            fontSize: 12,
+                            fontWeight: 500,
+                            textAlign: "left",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Select all
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
