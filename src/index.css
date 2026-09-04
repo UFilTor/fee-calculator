@@ -112,11 +112,14 @@ button {
   }
 }
 
-/* Country pill hover (off state only — selected pill is solid moss
-   and doesn't need a separate hover). Subtle tint, not a fill. */
-.country-pill:not([aria-checked="true"]):hover {
+/* Country selector hover: subtle tint on the closed trigger and on each
+   option in the open list. Tint, never a fill. */
+.country-trigger:hover {
   background: rgba(2, 44, 18, 0.05) !important;
   border-color: rgba(2, 44, 18, 0.25) !important;
+}
+.country-option:hover {
+  background: rgba(2, 44, 18, 0.07) !important;
 }
 
 /* Booking-amount input: faint resting border so the moss line doesn't
