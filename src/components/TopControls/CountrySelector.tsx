@@ -1,7 +1,7 @@
 import type { CountryCode } from "../../types";
 import { countries } from "../../config/fees";
 
-const countryOrder: CountryCode[] = ["SE", "NO", "DK", "IT"];
+const countryOrder: CountryCode[] = ["SE", "NO", "DK", "IT", "ES"];
 
 interface Props {
   selected: CountryCode;

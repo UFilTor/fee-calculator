@@ -1,4 +1,4 @@
-export type CountryCode = "SE" | "NO" | "DK" | "IT";
+export type CountryCode = "SE" | "NO" | "DK" | "IT" | "ES";
 
 export interface FeeStructure {
   percentage: number;

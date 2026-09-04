@@ -37,6 +37,15 @@ export const countries: Record<CountryCode, Country> = {
     defaultAmount: 50,
     locale: "it-IT",
   },
+  ES: {
+    code: "ES",
+    label: "Spain",
+    flag: "🇪🇸",
+    currency: "EUR",
+    currencySymbol: "€",
+    defaultAmount: 50,
+    locale: "es-ES",
+  },
 };
 
 export const paymentMethods: PaymentMethod[] = [
@@ -59,6 +68,10 @@ export const paymentMethods: PaymentMethod[] = [
         stripe: { percentage: 1.5, fixedFee: 1.80 },
       },
       IT: {
+        understory: { percentage: 1.4, fixedFee: 0 },
+        stripe: { percentage: 1.5, fixedFee: 0.25 },
+      },
+      ES: {
         understory: { percentage: 1.4, fixedFee: 0 },
         stripe: { percentage: 1.5, fixedFee: 0.25 },
       },

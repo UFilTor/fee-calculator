@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import type { CountryCode } from "../types";
 import { countries } from "../config/fees";
 
-const validCountries = new Set<string>(["SE", "NO", "DK", "IT"]);
+const validCountries = new Set<string>(["SE", "NO", "DK", "IT", "ES"]);
 
 interface UrlState {
   countryCode: CountryCode;
